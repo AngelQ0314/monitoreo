@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:3000
+
+###SERVICIOS
+
+### Obtener todos los servicios
+GET {{baseUrl}}/services
+
+
+### Obtener servicios por estado
+GET {{baseUrl}}/services?estado=Operando%20normalmente
+
+
+### Servicios impactados
+GET {{baseUrl}}/services?estado=Impactado
+
+
+### Servicios degradados
+GET {{baseUrl}}/services?estado=Degradado
+
+
+### Servicios interrumpidos
+GET {{baseUrl}}/services?estado=Interrumpido
+
+
+### Filtrar por cadena
+GET {{baseUrl}}/services?cadena=Pizza%20Hut
+
+
+### Filtrar por restaurante
+GET {{baseUrl}}/services?restaurante=KFC%20Mall%20del%20Sol
+
+
+### Cadena + Estado
+GET {{baseUrl}}/services?cadena=KFC&estado=Operando%20normalmente
+
+
+### Solo servicios activos
+GET {{baseUrl}}/services?activo=true
+
+
+### Filtro por rango de fechas (días completos)
+GET {{baseUrl}}/services/filtrar-fecha?campoFecha=fechaCreacion&desde=2024-10-10&hasta=2025-12-23
+
+
+### Buscar por ID
+GET {{baseUrl}}/services?id=srv-001
+
+
+### Resumen de estados
+GET {{baseUrl}}/services/resumen

@@ -1,0 +1,205 @@
+<div class="dashboard">
+  <h1 class="main-title">Panel de Monitoreo de Servicios</h1>
+  <!-- Resumen principal -->
+  <div class="summary-section">
+    <div class="summary">
+      <div class="summary-card total">
+        <h3>Total Servicios</h3>
+        <p class="summary-number">{{ (resumen.operando || 0) + (resumen.impactado || 0) + (resumen.degradado || 0) + (resumen.interrumpido || 0) | number:'2.0' }}</p>
+      </div>
+      <div class="summary-card operando">
+        <h3>Operando</h3>
+        <p class="summary-number">{{ resumen.operando || 0 | number:'2.0' }}</p>
+      </div>
+      <div class="summary-card impactado">
+        <h3>Impactado</h3>
+        <p class="summary-number">{{ resumen.impactado || 0 | number:'2.0' }}</p>
+      </div>
+      <div class="summary-card degradado">
+        <h3>Degradado</h3>
+        <p class="summary-number">{{ resumen.degradado || 0 | number:'2.0' }}</p>
+      </div>
+      <div class="summary-card interrumpido">
+        <h3>Interrumpido</h3>
+        <p class="summary-number">{{ resumen.interrumpido || 0 | number:'2.0' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <form class="filters-section filters" (ngSubmit)="aplicarFiltros()">
+    <label>
+      Desde:
+      <input type="date" [(ngModel)]="filtroDesde" name="desde" />
+    </label>
+    <label>
+      Hasta:
+      <input type="date" [(ngModel)]="filtroHasta" name="hasta" />
+    </label>
+    <label>
+      Estado:
+      <select [(ngModel)]="filtroEstado" name="estado">
+        <option value="">Todos</option>
+        <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+      </select>
+    </label>
+    <label>
+      Cadena:
+      <select [(ngModel)]="filtroCadena" name="cadena">
+        <option value="">Todas</option>
+        <option *ngFor="let cadena of cadenas" [value]="cadena">{{ cadena }}</option>
+      </select>
+    </label>
+    <label>
+      Restaurante:
+      <select [(ngModel)]="filtroRestaurante" name="restaurante">
+        <option value="">Todos</option>
+        <option *ngFor="let restaurante of restaurantes" [value]="restaurante">{{ restaurante }}</option>
+      </select>
+    </label>
+    <button type="submit">Filtrar</button>
+    <button type="button" (click)="limpiarFiltros()">Limpiar</button>
+  </form>
+
+  <!-- Lista de servicios -->
+  <div class="services-table-section">
+    <h2 class="section-title">Lista de Servicios</h2>
+    <table class="services-table pro">
+      <thead>
+        <tr>
+          <th>Servicio</th>
+          <th>Estado</th>
+          <th>Ambiente</th>
+          <th>Tipo</th>
+          <th>Cadena</th>
+          <th>Restaurante</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let service of services">
+          <td>
+            <div class="service-name">
+              <span class="service-badge">{{ service.nombre }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="status-dot" [ngClass]="{
+              'ok': service.estado === 'Operando normalmente',
+              'impact': service.estado === 'Impactado',
+              'degraded': service.estado === 'Degradado',
+              'down': service.estado === 'Interrumpido'
+            }" title="{{ service.estado }}"></span>
+            <span class="status-label">{{ service.estado }}</span>
+          </td>
+          <td>
+            <span class="env-badge">{{ service.ambiente }}</span>
+          </td>
+          <td>
+            <span class="type-badge">{{ service.tipo }}</span>
+          </td>
+          <td>
+            <span class="chain-badge">{{ service.clasificacion?.cadena || '-' }}</span>
+          </td>
+          <td>
+            <span class="restaurant-badge">{{ service.clasificacion?.restaurante || '-' }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="services.length === 0" class="no-data">No hay servicios para mostrar.</div>
+  </div>
+
+  <!-- Health Checks -->
+  <div class="health-section">
+    <h2 class="section-title">Health Checks</h2>
+    <table class="health-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Servicio</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Tiempo</th>
+          <th>Código</th>
+          <th>Mensaje</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let check of healthChecksPaginated">
+          <td><span class="health-dot" [ngClass]="{
+            'ok': check.estado === 'Operando normalmente',
+            'impact': check.estado === 'Impactado',
+            'degraded': check.estado === 'Degradado',
+            'down': check.estado === 'Interrumpido'
+          }"></span></td>
+          <td>
+            <span class="health-title">{{ getServiceNameById(check.serviceId) }}</span>
+            <span class="health-meta">({{ check.cadena }} - {{ check.restaurante }})</span>
+          </td>
+          <td>
+            <span class="health-badge" [ngClass]="{
+              'ok': check.estado === 'Operando normalmente',
+              'impact': check.estado === 'Impactado',
+              'degraded': check.estado === 'Degradado',
+              'down': check.estado === 'Interrumpido'
+            }">{{ check.estado }}</span>
+          </td>
+          <td>{{ check.fechaRevision || check.fecha | date:'short' }}</td>
+          <td *ngIf="check.tiempoRespuestaMs">{{ check.tiempoRespuestaMs }} ms</td>
+          <td *ngIf="check.codigoRespuesta">{{ check.codigoRespuesta }}</td>
+          <td *ngIf="check.mensaje">{{ check.mensaje }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="health-pagination">
+      <button *ngFor="let page of [].constructor(healthChecksTotalPages); let i = index"
+              [class.active]="healthChecksPage === (i+1)"
+              (click)="setHealthChecksPage(i+1)">{{ i+1 }}</button>
+    </div>
+  </div>
+
+  <!-- Incidentes -->
+  <div class="incidents-section">
+    <h2 class="section-title">Incidentes</h2>
+    <table class="incidents-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Severidad</th>
+          <th>Cadena</th>
+          <th>Restaurante</th>
+          <th>Servicio</th>
+          <th>Inicio</th>
+          <th>Descripción</th>
+          <th>Última actualización</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let incident of incidents">
+          <td><strong>{{ incident.titulo }}</strong></td>
+          <td><span class="incident-badge" [ngClass]="{
+            'badge-abierto': incident.estado === 'Abierto',
+            'badge-resuelto': incident.estado === 'Resuelto',
+            'badge-investigando': incident.estado === 'Investigando',
+            'badge-cerrado': incident.estado === 'Cerrado'
+          }">{{ incident.estado }}</span></td>
+          <td><span class="incident-severity" [ngClass]="{
+            'sev-alta': incident.severidad === 'Alta',
+            'sev-media': incident.severidad === 'Media',
+            'sev-baja': incident.severidad === 'Baja'
+          }">{{ incident.severidad }}</span></td>
+          <td>{{ incident.cadena }}</td>
+          <td>{{ incident.restaurante }}</td>
+          <td>{{ getServiceNameById(incident.serviceId) }}</td>
+          <td>{{ incident.fechaInicio | date:'short' }}</td>
+          <td>{{ incident.descripcion }}</td>
+          <td *ngIf="incident.actualizaciones?.length">
+            {{ incident.actualizaciones[incident.actualizaciones.length-1].mensaje }}
+            ({{ incident.actualizaciones[incident.actualizaciones.length-1].fecha | date:'short' }})
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
