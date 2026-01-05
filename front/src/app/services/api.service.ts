@@ -45,6 +45,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/maintenance`, maintenance);
   }
 
+  updateMaintenance(id: string, maintenance: any): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/maintenance/${id}`, maintenance);
+  }
+
   // Health-checks
   getHealthChecks(): Observable<any> {
     return this.http.get(`${this.baseUrl}/health-checks`);

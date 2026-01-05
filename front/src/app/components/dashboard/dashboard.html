@@ -202,4 +202,85 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Mantenimientos -->
+  <div class="maintenance-section">
+    <h2 class="section-title">Mantenimientos Programados</h2>
+    <table class="maintenance-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Servicio</th>
+          <th>Cadena</th>
+          <th>Restaurante</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of maintenance">
+          <td><strong>{{ m.titulo }}</strong></td>
+          <td>{{ m.estado }}</td>
+          <td>{{ getServiceNameById(m.serviceId) }}</td>
+          <td>{{ m.cadena }}</td>
+          <td>{{ m.restaurante }}</td>
+          <td>{{ m.fechaInicio | date:'short' }}</td>
+          <td>{{ m.fechaFin | date:'short' }}</td>
+          <td>{{ m.descripcion }}</td>
+          <td>
+            <button (click)="editMaintenance(m)">Editar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="maintenance-actions">
+      <button (click)="openMaintenanceModal()">Crear mantenimiento</button>
+    </div>
+  </div>
+
+  <!-- Modal de mantenimiento -->
+  <div class="modal-bg" *ngIf="showMaintenanceModal">
+    <div class="modal">
+      <h3>{{ maintenanceEdit ? 'Editar mantenimiento' : 'Crear mantenimiento' }}</h3>
+      <form (ngSubmit)="submitMaintenance()">
+        <label>Servicio:
+          <select [(ngModel)]="maintenanceForm.serviceId" name="serviceId" required>
+            <option *ngFor="let s of services" [value]="s._id">{{ s.nombre }}</option>
+          </select>
+        </label>
+        <label>Título:
+          <input type="text" [(ngModel)]="maintenanceForm.titulo" name="titulo" required />
+        </label>
+        <label>Estado:
+          <select [(ngModel)]="maintenanceForm.estado" name="estado" required>
+            <option value="Programado">Programado</option>
+            <option value="En progreso">En progreso</option>
+            <option value="Finalizado">Finalizado</option>
+          </select>
+        </label>
+        <label>Cadena:
+          <input type="text" [(ngModel)]="maintenanceForm.cadena" name="cadena" />
+        </label>
+        <label>Restaurante:
+          <input type="text" [(ngModel)]="maintenanceForm.restaurante" name="restaurante" />
+        </label>
+        <label>Fecha inicio:
+          <input type="datetime-local" [(ngModel)]="maintenanceForm.fechaInicio" name="fechaInicio" required />
+        </label>
+        <label>Fecha fin:
+          <input type="datetime-local" [(ngModel)]="maintenanceForm.fechaFin" name="fechaFin" />
+        </label>
+        <label>Descripción:
+          <textarea [(ngModel)]="maintenanceForm.descripcion" name="descripcion"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="submit">Guardar</button>
+          <button type="button" (click)="closeMaintenanceModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

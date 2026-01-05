@@ -3,8 +3,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 @Schema({ collection: 'maintenance' })
 export class Maintenance {
 
-  @Prop({ type: String })
-  _id: string;
 
   @Prop()
   serviceId: string;

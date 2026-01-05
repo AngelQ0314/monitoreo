@@ -15,6 +15,7 @@ export class Dashboard implements OnInit {
   resumen: any = {};
   incidents: any[] = [];
   healthChecks: any[] = [];
+  maintenance: any[] = [];
   filtroDesde: string = '';
   filtroHasta: string = '';
   filtroEstado: string = '';
@@ -29,6 +30,19 @@ export class Dashboard implements OnInit {
   healthChecksToShow: number = 5;
   healthChecksPage: number = 1;
   healthChecksPerPage: number = 5;
+
+  showMaintenanceModal: boolean = false;
+  maintenanceEdit: any = null;
+  maintenanceForm: any = {
+    serviceId: '',
+    titulo: '',
+    estado: 'Programado',
+    cadena: '',
+    restaurante: '',
+    fechaInicio: '',
+    fechaFin: '',
+    descripcion: ''
+  };
 
   constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) {}
 
@@ -72,6 +86,14 @@ export class Dashboard implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error cargando health checks:', err)
+    });
+    this.apiService.getMaintenance().subscribe({
+      next: (data) => {
+        console.log('Mantenimientos:', data);
+        this.maintenance = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error cargando mantenimientos:', err)
     });
   }
 
@@ -151,5 +173,44 @@ export class Dashboard implements OnInit {
 
   setHealthChecksPage(page: number) {
     this.healthChecksPage = page;
+  }
+
+  openMaintenanceModal(editObj: any = null) {
+    this.maintenanceEdit = editObj;
+    if (editObj) {
+      this.maintenanceForm = { ...editObj };
+    } else {
+      this.maintenanceForm = {
+        serviceId: '', titulo: '', estado: 'Programado', cadena: '', restaurante: '', fechaInicio: '', fechaFin: '', descripcion: ''
+      };
+    }
+    this.showMaintenanceModal = true;
+  }
+
+  closeMaintenanceModal() {
+    this.showMaintenanceModal = false;
+    this.maintenanceEdit = null;
+  }
+
+  submitMaintenance() {
+    if (!this.maintenanceForm.serviceId || !this.maintenanceForm.titulo || !this.maintenanceForm.estado || !this.maintenanceForm.fechaInicio) {
+      alert('Por favor, completa los campos obligatorios: Servicio, Título, Estado y Fecha de inicio.');
+      return;
+    }
+    if (this.maintenanceEdit) {
+      this.apiService.updateMaintenance(this.maintenanceEdit._id, this.maintenanceForm).subscribe({
+        next: () => { this.closeMaintenanceModal(); this.loadData(); },
+        error: (err) => alert('Error actualizando mantenimiento')
+      });
+    } else {
+      this.apiService.createMaintenance(this.maintenanceForm).subscribe({
+        next: () => { this.closeMaintenanceModal(); this.loadData(); },
+        error: (err) => alert('Error creando mantenimiento')
+      });
+    }
+  }
+
+  editMaintenance(m: any) {
+    this.openMaintenanceModal(m);
   }
 }

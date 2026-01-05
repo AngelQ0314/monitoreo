@@ -508,6 +508,105 @@ h1 {
   color: #fff;
   border-color: #2563eb;
 }
+.maintenance-section {
+  margin-top: 32px;
+}
+.maintenance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  background: #fff;
+}
+.maintenance-table th, .maintenance-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f3f4f6;
+  text-align: left;
+  font-size: 14px;
+}
+.maintenance-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+.maintenance-table tr:last-child td {
+  border-bottom: none;
+}
+.modal-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30,41,59,0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(30,41,59,0.18);
+  padding: 28px 32px;
+  min-width: 340px;
+  max-width: 98vw;
+}
+.modal h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 18px;
+}
+.modal label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #374151;
+}
+.modal input, .modal select, .modal textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  margin-top: 2px;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.maintenance-actions {
+  margin-bottom: 12px;
+  text-align: right;
+}
+.maintenance-actions button {
+  padding: 6px 18px;
+  border-radius: 6px;
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s;
+}
+.maintenance-actions button:hover {
+  background: #1e40af;
+}
+.maintenance-table td button {
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  cursor: pointer;
+  font-size: 13px;
+  color: #1f2937;
+  transition: background 0.2s;
+}
+.maintenance-table td button:hover {
+  background: #e0e7ef;
+}
 @media (max-width: 800px) {
   .lists-row {
     grid-template-columns: 1fr;
